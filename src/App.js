@@ -1,16 +1,13 @@
-import  Container  from './components/Container'
-import  Pill  from './components/Pill'
+import GlobalFonts from './fonts/fonts';
+import Container  from './components/Container'
+import NavBar from './components/NavBar'
 
 function App() {
   return (
     <div>
-      <nav>
-        <button onClick={() => console.log('hola')}>Menu lateral</button>
-        <button onClick={() => console.log('hola')}>BUSQUEDA</button>
-        <button onClick={() => console.log('hola')}>carrito</button>
-      </nav>
-      <Container>EMOJI REVISA TUS COMPRAS
-      </Container> 
+      <NavBar />
+      <GlobalFonts />
+      <Container />
     </div>
   )
 }
