@@ -85,7 +85,8 @@ text-decoration-line: underline;
 color: #F44336;
 `
 
-const Pill = () => {
+const Pill = ({...props}) => {
+  console.log(props)
   return (
     <Content>
       <StyledImage />

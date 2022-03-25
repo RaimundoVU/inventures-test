@@ -1,4 +1,5 @@
 import Pill from './Pill'
+import { useState, useEffect} from 'react'
 import styled from 'styled-components'
 
 const Emoji = styled.span`
@@ -66,6 +67,20 @@ const PillContainer = styled.div`
 `
 
 const Container = () => {
+  const [purchases, setPurchases] = useState([])
+  const [product, setProducts] = useState([]);
+
+  useEffect( () => {
+    fetch('https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/purchases', {
+      headers: {}
+    }).then( res => res.json())
+      .then(data => setPurchases(data.payload))
+    fetch('https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/products', {
+      headers: {}
+    }).then( res => res.json())
+      .then(data => setProducts(data.payload))
+  } , [])
+
   return(
     <div> 
       <Emoji>💊</Emoji>
@@ -73,6 +88,11 @@ const Container = () => {
       <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
       <Section> <SectionTitle>Te queda</SectionTitle></Section>
       <PillContainer>
+        {purchases.map(e => 
+          e !== null ?
+            <Pill key={e.id} products={product}  purchase={e}/>
+           : null
+        )}
       </PillContainer>
     </div>
   )
