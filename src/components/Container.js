@@ -1,6 +1,7 @@
 import Pill from './Pill'
 import { useState, useEffect} from 'react'
 import styled from 'styled-components'
+import axios from 'axios'
 
 const Emoji = styled.span`
   position: absolute;
@@ -68,32 +69,53 @@ const PillContainer = styled.div`
 
 const Container = () => {
   const [purchases, setPurchases] = useState([])
-  const [product, setProducts] = useState([]);
+  const [pills, setPills] = useState([]);
+  const [hasError, setHasError] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  useEffect( () => {
-    fetch('https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/purchases', {
-      headers: {}
-    }).then( res => res.json())
-      .then(data => setPurchases(data.payload))
-    fetch('https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/products', {
-      headers: {}
-    }).then( res => res.json())
-      .then(data => setProducts(data.payload))
+  useEffect(() => {
+    let productsUrl = 'https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/products'
+    let purchasesUrl = 'https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/purchases'
+    function fetchData(url, isPurchase) {
+        setLoading(true);
+        fetch(url)
+          .then(res => res.json())
+          .then(res => {
+            isPurchase ? setPurchases(res.payload) : setPills(res.payload)
+            setLoading(false)
+          }).catch(error => {
+            setHasError(true)
+            setLoading(false)
+          })
+    };
+    fetchData(purchasesUrl,  true);
+    fetchData(productsUrl, false);
   } , [])
 
   return(
     <div> 
-      <Emoji>💊</Emoji>
-      <Title>Revisa tus compras</Title>
-      <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
-      <Section> <SectionTitle>Te queda</SectionTitle></Section>
-      <PillContainer>
-        {purchases.map(e => 
-          e !== null ?
-            <Pill key={e.id} products={product}  purchase={e}/>
-           : null
-        )}
-      </PillContainer>
+      { loading ? 
+        <div>
+          <Emoji>💊</Emoji>
+          <Title>Revisa tus compras</Title>
+          <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
+          <Section> <SectionTitle>Te queda</SectionTitle></Section>
+          <PillContainer>Loading...</PillContainer>
+          </div> 
+          : (hasError ? <div>Erorr</div> : 
+          <div>
+            <Emoji>💊</Emoji>
+            <Title>Revisa tus compras</Title>
+            <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
+            <Section> <SectionTitle>Te queda</SectionTitle></Section>
+            <PillContainer>
+              {purchases.map( purchase => {
+                return (<Pill key={purchase.id} purchase={purchase} pills={pills} />)
+              })}
+            </PillContainer>
+          </div>
+          )
+      }
     </div>
   )
 }

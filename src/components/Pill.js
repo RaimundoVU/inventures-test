@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Content = styled.div`
   position: relative;
@@ -17,11 +18,18 @@ const StyledImage = styled.img`
   left: 20px;
   top: 16px;
 `
+const Button = styled.div`
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  right: 16px;
+  top: 23px;
+  background: rgba(0, 0, 0, 0.0001);
+`
 const TextContent = styled.div`
   position: absolute;
   top: 9.17px;
   left: 98px;
-  width: 151px;
   display: flex;
   flex-direction: column;
 `
@@ -37,8 +45,11 @@ const StyledName = styled.span`
   color: #000000;
 `
 
-const StyledDescription = styled(StyledName)`
+const StyledDescription = styled.span`
+  height: 20px;
   color: rgba(0, 0, 0, 0.54);
+  font-family: 'Poppins';
+  font-style: normal;
   font-size: 13px;
   font-weight: 400;
   top: 30.17px;
@@ -46,58 +57,67 @@ const StyledDescription = styled(StyledName)`
   letter-spacing: 0.15px;
 `
 
-const Button = styled.button`
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  left: 296px;
-  top: 22px;
-  background: rgba(0, 0, 0, 0.0001);
-`
-
 const PillLeft = styled.span`
 width: 158px;
 height: 20px;
-left: 98px;
-top: 308px;
+top: 49px;
 font-family: 'Poppins';
-font-style: normal;
 font-weight: 400;
-font-size: 13px;
+font-size: 12px;
 line-height: 20px;
 letter-spacing: 0.15px;
 text-decoration-line: underline;
-color: #F44336;
+color: ${props => props.pillsLeft < 5 ? '#F44336' : '#0277BD'};
 `
 
 const PillDays = styled.span`
-width: 72px;
 height: 18px;
 left: 98px;
-top: 327px;
+top: 68px;
 font-family: 'Poppins';
-font-style: normal;
 font-weight: 400;
-font-size: 12px;
+font-size: 10px;
 line-height: 18px;
 letter-spacing: 0.4px;
 text-decoration-line: underline;
-color: #F44336;
+color: ${props => props.pillsLeft < 5 ? '#F44336' : '#0277BD'};
 `
 
+
 const Pill = ({...props}) => {
-  console.log(props)
+  const { purchase, pills} = props;
+
+  const calculateDaysLeft = (el, purchase) => {
+    let today = new Date()
+    let received_date = new Date(purchase.received_date);
+    let result = Math.abs(today - received_date);
+    let days = Math.ceil(result / (1000 * 60 * 60 * 24));
+    let pillsLeft = el - days;
+    return pillsLeft < 0 ? 0 : pillsLeft;
+    
+  }
   return (
-    <Content>
-      <StyledImage />
+    <>
+    {purchase.details.map((el) => {
+      let pill = pills.find( p => p.id === el.id )
+      let pillsLeft = calculateDaysLeft(el.quantity, purchase)
+      return (
+      <Content key={el.id}>
+      <StyledImage alt='REMEDIO' src={pill.imagesUrl}/>
       <TextContent>
-        <StyledName>Eutirox</StyledName>
-        <StyledDescription>75 mg</StyledDescription>
-        <PillLeft> Quedan 5 comprimidos</PillLeft>
-        <PillDays> Para 5 días</PillDays>
+        <StyledName>{pill.name}</StyledName>
+        <StyledDescription>{pill.concentration}</StyledDescription>
+        <PillLeft pillsLeft={pillsLeft}>Quedan {el.quantity} comprimidos</PillLeft>
+        <PillDays pillsLeft={pillsLeft}
+        > 
+          Para {pillsLeft} días
+        </PillDays>
       </TextContent>
-      <Button>Carrito</Button>
-    </Content>
+        <Button>Carrito</Button>
+      </Content>
+      )
+      })}
+    </>
   )
 }
 
