@@ -28,7 +28,6 @@ function App() {
   const productsUrl = 'https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/products'
 
   useEffect(() => {
-    console.log('useEffect App');
     fetchInfo(productsUrl);
   } , [])
 
@@ -50,7 +49,7 @@ function App() {
       <NavBar />
       <GlobalFonts />
       { !loading ?
-      <Container loadingProducts={loading} pills={pills} />
+      <Container loadingProducts={false} pills={pills} />
       : <div>Loading...</div>}
     </div>
     </ThemeProvider>

@@ -94,40 +94,41 @@ bottom: 8.33%;
 `
 
 const Pill = ({...props}) => {
-  const { purchase, pills} = props;
+  const { purchase, pills, lastReceived} = props;
+  console.log(props)
 
-  const calculateDaysLeft = (el, purchase) => {
+  const calculateDaysLeft = ( purchase, lastReceived ) => {
     let today = new Date()
-    let received_date = new Date(purchase.received_date);
+    let received_date = new Date(lastReceived);
     let result = Math.abs(today - received_date);
     let days = Math.ceil(result / (1000 * 60 * 60 * 24));
-    let pillsLeft = el - days;
+    let pillsLeft = purchase.total - days;
     return pillsLeft < 0 ? 0 : pillsLeft;
-    
   }
-  console.log(purchase)
+
+  const pill = pills.find( p => p.id === purchase.product_id )
+  const pillsLeft = calculateDaysLeft(purchase, lastReceived)
   return (
     <div>
-    { purchase.details.map((el) => {
-      let pill = pills.find( p => p.id === el.product_id )
-      let pillsLeft = calculateDaysLeft(el.quantity, purchase)
-      return (
-      <Content key={el.id}>
-        <StyledImage alt='REMEDIO' src={pill.imagesUrl !== null ? pill.imagesUrl : ''}/>
-      <TextContent>
-        <StyledName>{pill.name}</StyledName>
-        <StyledDescription>{pill.concentration}</StyledDescription>
-        <PillLeft pillsLeft={pillsLeft}>Quedan {pillsLeft} comprimidos</PillLeft>
-        <PillDays pillsLeft={pillsLeft}
-        > 
-          Para {pillsLeft} días
-        </PillDays>
-      </TextContent>
-        <Button> <ShoppingCartIcon fontSize="large" /></Button>
-        <Circle> <AddCircleIcon /></Circle>
-      </Content>
-      )
-    }) }
+      {
+        <Content key={purchase.product_id}>
+          <StyledImage alt='REMEDIO' src={pill.imagesUrl !== null ? pill.imagesUrl : ''}/>
+          <TextContent>
+          <StyledName>{pill.name}</StyledName>
+            <StyledDescription>{pill.concentration}</StyledDescription>
+            <PillLeft pillsLeft={pillsLeft}>
+              Quedan {pillsLeft} comprimidos
+            </PillLeft>
+            <PillDays 
+              pillsLeft={pillsLeft}
+            > 
+              Para {pillsLeft} días
+            </PillDays>
+          </TextContent>
+          <Button> <ShoppingCartIcon fontSize="large" /></Button>
+          <Circle> <AddCircleIcon /></Circle>
+        </Content>
+      }
     </div>
   )
 }
