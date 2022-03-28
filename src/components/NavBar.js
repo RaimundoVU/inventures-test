@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Content = styled.div`
   width: 360px;
@@ -23,12 +25,42 @@ letter-spacing: 0.15px;
 
 color: #FFFFFF;
 `
+const StyledMenu = styled.div`
+position: absolute;
+width: 48px;
+height: 48px;
+top: 20px;
+left: 15px;
+`
 
+const StyledSearch = styled.div`
+position: absolute;
+width: 48px;
+height: 48px;
+left: 264px;
+top: 20px;
+`
+
+const StyledCart = styled.div`
+position: absolute;
+width: 48px;
+height: 48px;
+top: 20px;
+left: 312px;
+`
 const NavBar = () => {
   return(
       <Content>
-<FontAwesomeIcon icon="fa-solid fa-bars" />
+        <StyledMenu>
+          <MenuIcon fontSize="medium" color="primary"/>
+        </StyledMenu>
         <StyledTitle>Mi pastillero</StyledTitle>
+        <StyledSearch>
+          <SearchIcon fontSize="medium" color="primary"/>
+        </StyledSearch>
+        <StyledCart> 
+          <ShoppingCartIcon fontSize="medium" color="primary"/> 
+        </StyledCart>
       </Content>
   )
 }

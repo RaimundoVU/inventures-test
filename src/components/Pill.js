@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const Content = styled.div`
   position: relative;
@@ -25,6 +26,7 @@ const Button = styled.div`
   right: 16px;
   top: 23px;
   background: rgba(0, 0, 0, 0.0001);
+  cursor: pointer;
 `
 const TextContent = styled.div`
   position: absolute;
@@ -83,6 +85,13 @@ text-decoration-line: underline;
 color: ${props => props.pillsLeft < 5 ? '#F44336' : '#0277BD'};
 `
 
+const Circle = styled.div`
+position: absolute;
+left: 322px;
+right: 8.33%;
+top: 8.33%;
+bottom: 8.33%;
+`
 
 const Pill = ({...props}) => {
   const { purchase, pills} = props;
@@ -96,28 +105,30 @@ const Pill = ({...props}) => {
     return pillsLeft < 0 ? 0 : pillsLeft;
     
   }
+  console.log(purchase)
   return (
-    <>
-    {purchase.details.map((el) => {
-      let pill = pills.find( p => p.id === el.id )
+    <div>
+    { purchase.details.map((el) => {
+      let pill = pills.find( p => p.id === el.product_id )
       let pillsLeft = calculateDaysLeft(el.quantity, purchase)
       return (
       <Content key={el.id}>
-      <StyledImage alt='REMEDIO' src={pill.imagesUrl}/>
+        <StyledImage alt='REMEDIO' src={pill.imagesUrl !== null ? pill.imagesUrl : ''}/>
       <TextContent>
         <StyledName>{pill.name}</StyledName>
         <StyledDescription>{pill.concentration}</StyledDescription>
-        <PillLeft pillsLeft={pillsLeft}>Quedan {el.quantity} comprimidos</PillLeft>
+        <PillLeft pillsLeft={pillsLeft}>Quedan {pillsLeft} comprimidos</PillLeft>
         <PillDays pillsLeft={pillsLeft}
         > 
           Para {pillsLeft} días
         </PillDays>
       </TextContent>
-        <Button>Carrito</Button>
+        <Button> <ShoppingCartIcon fontSize="large" /></Button>
+        <Circle> <AddCircleIcon /></Circle>
       </Content>
       )
-      })}
-    </>
+    }) }
+    </div>
   )
 }
 

@@ -1,7 +1,6 @@
 import Pill from './Pill'
 import { useState, useEffect} from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
 
 const Emoji = styled.span`
   position: absolute;
@@ -67,30 +66,34 @@ const PillContainer = styled.div`
   top: 259px;
 `
 
-const Container = () => {
+const Container = ({...props}) => {
+  const { loadingProducts, pills } = props;
   const [purchases, setPurchases] = useState([])
-  const [pills, setPills] = useState([]);
   const [hasError, setHasError] = useState(false)
   const [loading, setLoading] = useState(false)
+  const purchasesUrl = 'https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/purchases'
 
   useEffect(() => {
-    let productsUrl = 'https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/products'
-    let purchasesUrl = 'https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/purchases'
-    function fetchData(url, isPurchase) {
-        setLoading(true);
-        fetch(url)
-          .then(res => res.json())
-          .then(res => {
-            isPurchase ? setPurchases(res.payload) : setPills(res.payload)
-            setLoading(false)
-          }).catch(error => {
-            setHasError(true)
-            setLoading(false)
-          })
-    };
-    fetchData(purchasesUrl,  true);
-    fetchData(productsUrl, false);
-  } , [])
+    console.log('useEffect container');
+    fetchInfo(purchasesUrl);
+  } , [loadingProducts])
+
+  const fetchInfo = async (url) => {
+    if (!loadingProducts){
+
+      setLoading(true);
+      const data = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const res = await data.json();
+      setPurchases(res.payload);
+      setLoading(false);
+    }
+
+  }
 
   return(
     <div> 
@@ -109,9 +112,9 @@ const Container = () => {
             <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
             <Section> <SectionTitle>Te queda</SectionTitle></Section>
             <PillContainer>
-              {purchases.map( purchase => {
-                return (<Pill key={purchase.id} purchase={purchase} pills={pills} />)
-              })}
+              { purchases !== undefined ? purchases.map( purchase => {
+                return (<Pill key={purchase.purchase_id} purchase={purchase} pills={pills} />)
+              }) : null }
             </PillContainer>
           </div>
           )
