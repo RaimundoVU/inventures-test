@@ -1,4 +1,5 @@
 import Pill from './Pill'
+import { useState, useEffect} from 'react'
 import styled from 'styled-components'
 
 const Emoji = styled.span`
@@ -65,15 +66,59 @@ const PillContainer = styled.div`
   top: 259px;
 `
 
-const Container = () => {
+const Container = ({...props}) => {
+  const { loadingProducts, pills } = props;
+  const [purchases, setPurchases] = useState([])
+  const [hasError, setHasError] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const purchasesUrl = 'https://private-anon-2cfc10ba85-inventurestest.apiary-mock.com/purchases'
+
+  useEffect(() => {
+    console.log('useEffect container');
+    fetchInfo(purchasesUrl);
+  } , [loadingProducts])
+
+  const fetchInfo = async (url) => {
+    if (!loadingProducts){
+
+      setLoading(true);
+      const data = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const res = await data.json();
+      setPurchases(res.payload);
+      setLoading(false);
+    }
+
+  }
+
   return(
     <div> 
-      <Emoji>💊</Emoji>
-      <Title>Revisa tus compras</Title>
-      <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
-      <Section> <SectionTitle>Te queda</SectionTitle></Section>
-      <PillContainer>
-      </PillContainer>
+      { loading ? 
+        <div>
+          <Emoji>💊</Emoji>
+          <Title>Revisa tus compras</Title>
+          <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
+          <Section> <SectionTitle>Te queda</SectionTitle></Section>
+          <PillContainer>Loading...</PillContainer>
+          </div> 
+          : (hasError ? <div>Erorr</div> : 
+          <div>
+            <Emoji>💊</Emoji>
+            <Title>Revisa tus compras</Title>
+            <Subtitle>Agrega al carro si necesitas reponer</Subtitle>
+            <Section> <SectionTitle>Te queda</SectionTitle></Section>
+            <PillContainer>
+              { purchases !== undefined ? purchases.map( purchase => {
+                return (<Pill key={purchase.purchase_id} purchase={purchase} pills={pills} />)
+              }) : null }
+            </PillContainer>
+          </div>
+          )
+      }
     </div>
   )
 }
